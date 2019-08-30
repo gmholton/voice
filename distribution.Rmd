@@ -5,6 +5,12 @@ date: "8/29/2019"
 output: html_document
 ---
 
+
+# Distribution of Austronesian Voice Systems
+
+## LING 770, Fall 2019
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -20,7 +26,7 @@ library(leaflet)
 glottolog <- read.csv("https://cdstar.shh.mpg.de/bitstreams/EAEA0-E7DE-FA06-8817-0/languages_and_dialects_geo.csv", stringsAsFactors = F)
 glotto_geo <- select(glottolog, glottocode, isocodes, latitude, longitude )
 
-gs <- gs_title("Austronesian")
+gs <- gs_title("Voicemap")
 distrib <- gs_read(ss=gs, ws="Voice", na.strings="" )
 
 distrib_geo <- left_join(distrib, glotto_geo)
@@ -34,7 +40,8 @@ leaflet(distrib_geo) %>%
   addTiles() %>%
   addCircleMarkers(lng= ~longitude, lat= ~latitude, color=~factpal(System), radius = 15,
                    stroke = FALSE, fillOpacity = 0.5, label=~System) %>%
-  addLegend(values = ~System,  pal = factpal, title="Distribution of voice systems" )
+    setView(lng=115, lat=0, zoom = 4) %>%
+    addLegend(values = ~System,  pal = factpal, title="Distribution of voice systems" )
 
 
 ```

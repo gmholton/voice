@@ -1,19 +1,19 @@
 ---
-title: "Distribution of Voice Systems"
+title: "Distribution of Austronesian Voice Systems"
 author: "Gary Holton"
 date: "8/29/2019"
 output: html_document
 ---
 
 
-# Distribution of Austronesian Voice Systems
 
 ## LING 770, Fall 2019
+
+This page displays a map of the distribution of Austonesian voice systems, based on data entered in [this spreadsheet](https://docs.google.com/spreadsheets/d/1LhEEySTnIvtXxGVsChzM2P7RSuOqQMGpxoGXD_Of7io/edit?usp=sharing). Language locations determined from [Glottocodes](http://glottolog.org).
 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 library(googlesheets)
 library(dplyr)
 library(tidyr)
@@ -22,26 +22,27 @@ library(ggplot2)
 library(leaflet)
 ```
 
-```{r}
+Get Glotolog data and join coordinates to our spreadsheet:
+```{r,warning=FALSE, message=FALSE}
 glottolog <- read.csv("https://cdstar.shh.mpg.de/bitstreams/EAEA0-E7DE-FA06-8817-0/languages_and_dialects_geo.csv", stringsAsFactors = F)
 glotto_geo <- select(glottolog, glottocode, isocodes, latitude, longitude )
-
 gs <- gs_title("Voicemap")
 distrib <- gs_read(ss=gs, ws="Voice", na.strings="" )
+distrib_geo <- left_join(distrib, glotto_geo, c("glottocode"="glottocode"))
+```
 
-distrib_geo <- left_join(distrib, glotto_geo)
-
-
+Plot using Leaflet:
+```{r, warning=FALSE, message=FALSE}
 # set colors
-factpal <- colorFactor(brewer.pal(length(unique(distrib_geo$System)), "Set1"), distrib_geo$System )
-
-# then plot circles
+factpal <- colorFactor(brewer.pal(length(unique(distrib_geo$system)), "Set1"), distrib_geo$system )
+# then plot
 leaflet(distrib_geo) %>%
   addTiles() %>%
-  addCircleMarkers(lng= ~longitude, lat= ~latitude, color=~factpal(System), radius = 15,
-                   stroke = FALSE, fillOpacity = 0.5, label=~System) %>%
+  addCircleMarkers(lng= ~longitude, lat= ~latitude, color=~factpal(system), radius = 5,
+                   stroke = FALSE, fillOpacity = 0.5, label=~language) %>%
     setView(lng=115, lat=0, zoom = 4) %>%
-    addLegend(values = ~System,  pal = factpal, title="Distribution of voice systems" )
+    addLegend(values = ~system,  pal = factpal, title="Distribution of voice systems" )
 
 
 ```
+
